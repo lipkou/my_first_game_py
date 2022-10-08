@@ -192,6 +192,9 @@ arrow = Game_sprite(350, 300, 80, 100, 'images//arrow.png')
 music_shot = pygame.mixer.Sound('music//shot.ogg')
 
 level = 0
+end_level_1 = 0
+end_level_2 = 0
+
 play = True
 game = True
 while game:
@@ -265,10 +268,13 @@ while game:
             if pygame.sprite.collide_rect(player, coin):
                 play = False
                 level = 2
+                end_level_1 = 1
                 pygame.mixer.music.stop()
                 music_pick_up_coin.play()
                 sleep(1.5)
                 music_pick_up_coin.stop()
+                pygame.mixer.music.play()
+
 
 
 
@@ -282,9 +288,46 @@ while game:
             pygame.sprite.groupcollide(bullets, enemys, True, True)
 
     elif level == 2:
+        if end_level_1:
+            play = True
+            player = Player(100, 50, 75, 80, 'images//hunter.png', 0, 0)
+            end_level_1 = 0
 
-        window.blit(level_2, (0, 0))
-        # далі код 2 рівня гри
+        
+        if play:
+            window.blit(level_2, (0, 0))
+            player.reset()
+            player.update()
+            enemys.draw(window)
+            enemys.update()
+            walls.draw(window)
+            coin.reset()
+            bullets.draw(window)
+            bullets.update()
+            
+            #arrow.reset()
+
+            if pygame.sprite.collide_rect(player, coin):
+                play = False
+                level = 2
+                end_level_1 = 1
+                pygame.mixer.music.stop()
+                music_pick_up_coin.play()
+                sleep(1.5)
+                music_pick_up_coin.stop()
+                pygame.mixer.music.play()
+
+
+
+
+            if pygame.sprite.spritecollide(player, enemys, False):
+                play = False
+                window.blit(gg_image, (0, 0))
+                pygame.mixer.music.stop()
+                music_gg.play()
+
+            pygame.sprite.groupcollide(bullets, walls, True, False)
+            pygame.sprite.groupcollide(bullets, enemys, True, True)
 
 
 
