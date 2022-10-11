@@ -24,16 +24,16 @@ window = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 pygame.display.set_caption('Surwaiwal_game(test)')
 clock = pygame.time.Clock()
 
-level_1 = pygame.image.load('images//level_1.jpg')
-level_1 = pygame.transform.scale(level_1, (WIN_WIDTH, WIN_HEIGHT))
+img_level_1 = pygame.image.load('images//level_1.jpg')
+img_level_1 = pygame.transform.scale(img_level_1, (WIN_WIDTH, WIN_HEIGHT))
 
 win_image = pygame.image.load('images//win_image.png')
 win_image = pygame.transform.scale(win_image, (WIN_WIDTH, WIN_HEIGHT))
 
-level_2 = pygame.image.load('images//level_2.jpg')
-level_2 = pygame.transform.scale(level_2, (WIN_WIDTH, WIN_HEIGHT))
+img_level_2 = pygame.image.load('images//level_2.jpg')
+img_level_2 = pygame.transform.scale(img_level_2, (WIN_WIDTH, WIN_HEIGHT))
 
-pygame.mixer.music.load('music//fon_music(2).ogg')
+pygame.mixer.music.load('music//fon_music.ogg')
 pygame.mixer.music.set_volume(0.05)
 pygame.mixer.music.play(-1)
 
@@ -41,6 +41,7 @@ music_win = pygame.mixer.Sound('music//fon_music.ogg')
 music_gg = pygame.mixer.Sound('music//GG.ogg')
 music_use = pygame.mixer.Sound('music//Button_use.ogg')
 music_pick_up_coin = pygame.mixer.Sound('music//pick_up_coin.ogg')
+music_button_use = pygame.mixer.Sound('music//Button_use.ogg')
 
 gg_image = pygame.image.load('images//Gg_image.jpg')
 gg_image = pygame.transform.scale(gg_image, (WIN_WIDTH, WIN_HEIGHT))
@@ -117,9 +118,9 @@ class Player(Game_sprite):
                 self.rect.bottom = min(self.rect.bottom, wall.rect.top)
     def fire(self):
         if self.direction == 'left':
-            bullet = Bullet(self.rect.left, self.rect.centery, 10, 5, 'images//arrow.png', -40)
+            bullet = Bullet(self.rect.left, self.rect.centery, 10, 5, 'images//arrow.png', -28)
         elif self.direction == 'right':
-            bullet = Bullet(self.rect.right, self.rect.centery, 10, 5, 'images//arrow.png', 40)
+            bullet = Bullet(self.rect.right, self.rect.centery, 10, 5, 'images//arrow.png', 28)
         bullets.add(bullet)
 
 class Enemy(Game_sprite):
@@ -165,35 +166,22 @@ class Bullet(Game_sprite):
         if self.rect.right >= WIN_WIDTH or self.rect.left <= 0:
             self.kill()
 
-btn1 = Button(150, 100, 200, 100, "Level 1")
-btn2 = Button(150, 250, 200, 100, "Level 2")
+btn1 = Button(100, 100, 200, 100, "Level 1")
+btn2 = Button(400, 100, 200, 100, "Level 2")
 
 enemys = pygame.sprite.Group()
 bullets = pygame.sprite.Group()
-
-player = Player(100, 50, 75, 80, 'images//hunter.png', 0, 0)
-warior = Enemy(400, 300, 90, 90, 'images//warior.png', 8, 'left', 420, 700)
-warior2 = Enemy(600, 98, 90, 90, 'images//warior.png', 5, 'right', 330, 700)
-enemys.add(warior)
-enemys.add(warior2)
-
 walls = pygame.sprite.Group()
-walls.add(Game_sprite(0, 190, 120, 30, 'images//wall.png'))
-walls.add(Game_sprite(120, 190, 120, 30, 'images//wall.png'))
-walls.add(Game_sprite(240, 190, 170, 30, 'images//wall.png'))
-walls.add(Game_sprite(310, 110, 30, 250, 'images//wall.png'))
-walls.add(Game_sprite(240, 360, 180, 30, 'images//wall.png'))
-walls.add(Game_sprite(580, 190, 120, 30, 'images//wall.png'))
-walls.add(Game_sprite(120, 360, 120, 30, 'images//wall.png'))
 
-coin = Game_sprite(240,  280, 50, 50, 'images//coin.png')
+
 arrow = Game_sprite(350, 300, 80, 100, 'images//arrow.png')
 
 music_shot = pygame.mixer.Sound('music//shot.ogg')
 
 level = 0
-end_level_1 = 0
-end_level_2 = 0
+start_level_0 = 0
+start_level_1 = 0
+start_level_2 = 0
 
 play = True
 game = True
@@ -242,18 +230,52 @@ while game:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if btn1.rect.collidepoint(x, y):
                     level = 1
+                    music_button_use.play()
+
                 if btn2.rect.collidepoint(x, y):
                     level = 2
+                    music_button_use.play()
+
 
 
     if level == 0:
+        if start_level_0 == 0:
+            player = Player(315, 250, 75, 80, 'images//hunter.png', 0, 0)
+            start_level_0 = 1
+        
         window.fill(GREY)
         btn1.show()
         btn2.show()
+        player.reset()
+        player.update()
+        bullets.draw(window)
+        bullets.update()
 
-    elif level == 1:
+
+
+    elif level == 1: 
+        # загрузка 1 ур
+        if start_level_1 == 0:
+            player = Player(100, 50, 75, 80, 'images//hunter.png', 0, 0)
+            play = True
+            window.blit(img_level_1, (0, 0))
+            enemys.empty()
+            enemys.add(Enemy(400, 300, 90, 90, 'images//warior.png', 8, 'left', 420, 700))
+            enemys.add(Enemy(600, 98, 90, 90, 'images//warior.png', 5, 'right', 330, 700))
+            walls.empty()
+            walls.add(Game_sprite(0, 190, 120, 30, 'images//wall.png'))
+            walls.add(Game_sprite(120, 190, 120, 30, 'images//wall.png'))
+            walls.add(Game_sprite(240, 190, 170, 30, 'images//wall.png'))
+            walls.add(Game_sprite(310, 110, 30, 250, 'images//wall.png'))
+            walls.add(Game_sprite(240, 360, 180, 30, 'images//wall.png'))
+            walls.add(Game_sprite(580, 190, 120, 30, 'images//wall.png'))
+            walls.add(Game_sprite(120, 360, 120, 30, 'images//wall.png'))
+            coin = Game_sprite(240,  280, 50, 50, 'images//coin.png')
+            start_level_1 = 1
+
+        
         if play:
-            window.blit(level_1, (0, 0))
+            window.blit(img_level_1, (0, 0))
             player.reset()
             player.update()
             enemys.draw(window)
@@ -262,18 +284,14 @@ while game:
             coin.reset()
             bullets.draw(window)
             bullets.update()
-            
-            #arrow.reset()
 
             if pygame.sprite.collide_rect(player, coin):
                 play = False
                 level = 2
-                end_level_1 = 1
                 pygame.mixer.music.stop()
                 music_pick_up_coin.play()
-                sleep(1.5)
+                sleep(1.2)
                 music_pick_up_coin.stop()
-                pygame.mixer.music.play()
 
 
 
@@ -288,14 +306,29 @@ while game:
             pygame.sprite.groupcollide(bullets, enemys, True, True)
 
     elif level == 2:
-        if end_level_1:
-            play = True
+        # загрузка 2 ур
+        if start_level_2 == 0:
+            pygame.mixer.music.load('music//fon_music(2).ogg')
+            pygame.mixer.music.play()
             player = Player(100, 50, 75, 80, 'images//hunter.png', 0, 0)
-            end_level_1 = 0
-
+            play = True
+            enemys.empty()
+            enemys.add(Enemy(400, 300, 90, 90, 'images//warior.png', 8, 'left', 420, 700))
+            enemys.add(Enemy(600, 98, 90, 90, 'images//warior.png', 5, 'right', 330, 700))
+            walls.empty()
+            walls.add(Game_sprite(0, 190, 120, 30, 'images//wall.png'))
+            walls.add(Game_sprite(120, 190, 120, 30, 'images//wall.png'))
+            walls.add(Game_sprite(240, 190, 170, 30, 'images//wall.png'))
+            walls.add(Game_sprite(310, 110, 30, 250, 'images//wall.png'))
+            walls.add(Game_sprite(240, 360, 180, 30, 'images//wall.png'))
+            walls.add(Game_sprite(580, 190, 120, 30, 'images//wall.png'))
+            walls.add(Game_sprite(120, 360, 120, 30, 'images//wall.png'))
+            coin = Game_sprite(240,  280, 50, 50, 'images//coin.png')
+            start_level_2 = 1
         
+
         if play:
-            window.blit(level_2, (0, 0))
+            window.blit(img_level_2, (0, 0))
             player.reset()
             player.update()
             enemys.draw(window)
@@ -310,10 +343,9 @@ while game:
             if pygame.sprite.collide_rect(player, coin):
                 play = False
                 level = 2
-                end_level_1 = 1
                 pygame.mixer.music.stop()
                 music_pick_up_coin.play()
-                sleep(1.5)
+                sleep(1.2)
                 music_pick_up_coin.stop()
                 pygame.mixer.music.play()
 
